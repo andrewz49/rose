@@ -3,7 +3,7 @@
   import Rose from "@/components/Rose.vue"
   const params = new URLSearchParams(location.search)
   const key = params.get('key')
-  const com = key == '2' ?  Flow : Rose
+  const com = key == '1' ?  Rose : Flow
 </script>
 
 <template>
