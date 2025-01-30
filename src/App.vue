@@ -1,9 +1,14 @@
 <script setup>
   import Flow from "@/components/Flow.vue"
   import Rose from "@/components/Rose.vue"
+  import FlowMother from "@/components/FlowMother.vue"
   const params = new URLSearchParams(location.search)
   const key = params.get('key')
-  const com = key == '1' ?  Rose : Flow
+  let com = key == '1' ?  Rose : Flow
+
+  if(key == "mother"){
+    com = FlowMother
+  }
 </script>
 
 <template>
