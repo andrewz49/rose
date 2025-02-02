@@ -1,26 +1,18 @@
 <template>
 
   <div class="page-rose">
-    <div class="start-page" v-if="isStartShow">
-      <div class="face" ref="face">
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-        <div class="mouth"></div>
-      </div>
-      <button class="btn-smail" @click="makeSmail">Make A Smile</button>
-    </div>
     <div class="text">
       <div>Every moment with you is a treasure.</div>
     </div>
     <div class="btn-music">
-      <img v-if="isMucicOpen" @click="musicSwitch(0)" style="width:22px" src="../assets/music_fill.png" alt="">
-      <img v-else @click="musicSwitch(1)" style="width:22px" src="../assets/music_forbid_fill.png" alt="">
+      <img v-if="isMucicOpen" @click="musicSwitch(0)" style="width:30px" src="../assets/music_fill.png" alt="">
+      <img v-else @click="musicSwitch(1)" style="width:30px" src="../assets/music_forbid_fill.png" alt="">
     </div>
     <div ref="loadingDom" class="loading">
       <img class="icon" src="../assets/sakura-flower.png" alt="">
       <div>Please waiting...</div>
     </div>
-    <div class="" ref="roseDom"></div>
+    <div class="roseDom" ref="roseDom"></div>
   </div>
 </template>
 
@@ -37,65 +29,34 @@ let previousPosition = { x: 0, y: 0 };
 
 const loadingDom = ref("")
 const roseDom = ref("")
-const isLoad = ref(false);
-const isMucicOpen = ref(true)
-const isStartShow = ref(true)
+const isMucicOpen = ref(false)
+
 // 玫瑰花模型
 let roseModel = null;
-
 const audioPath = getUrl('/weddingSong.mp3');
 const audioPlayer = playAudio(audioPath);
-
-
 let face;
-function makeSmail() {
-  face.classList.toggle("smile"); // 切换笑容状态
-  setTimeout(()=>{
-    isStartShow.value = false
-
-    roseDom.value.classList.toggle("fadein");
-    audioPlayer.play();
-  },1000)
-}
-
-function musicSwitch(status) {
-  if (status) {
-    audioPlayer.play();
-    isMucicOpen.value = true
-  } else {
-    audioPlayer.pause();
-    isMucicOpen.value = false
-  }
-}
-
-
 
 onMounted(() => {
-  face = document .querySelector(".face")
-
-
+  face = document.querySelector(".face")
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 4.6, 3.6);  // 试试调整到 (0, 2, 10)
-  camera.lookAt(0, 1, -1);  // 确保相机朝向场景中心
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  camera.position.set(0, 6.8, 8);  // 试试调整到 (0, 2, 10)
+  camera.lookAt(0, 1, -3);  // 确保相机朝向场景中心
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true,alpha:true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   roseDom.value.replaceChildren(renderer.domElement);
   // 添加光源
   const light = new THREE.AmbientLight('#fff', 0.5); // 环境光
-  scene.add(light);
   const directionalLight = new THREE.DirectionalLight('#fff', 1); // 平行光
   directionalLight.position.set(10, 15, 5);
-  scene.add(directionalLight);
-
   const pointLight = new THREE.PointLight('#fff', 0.5, 50); // 点光源
   pointLight.position.set(0, 1, 3); // 放在茎部附近
-  scene.add(pointLight);
+  scene.add(light).add(directionalLight).add(pointLight);
 
-  scene.background = new THREE.Color('#c9e3e7');
   const textureLoader = new THREE.TextureLoader();
-
 
   const m_petal_img = getUrl('/textures/m_petal_roughness.jpg');
   const m_stem_img = getUrl('/textures/m_stem_roughness.jpg');
@@ -107,8 +68,6 @@ onMounted(() => {
   const m_stem = textureLoader.load(m_stem_img);
   const m_leafs = textureLoader.load(m_leafs_img);
   const m_thorns = textureLoader.load(m_thorns_img);
-
-
 
   // 加载 FBX 模型
   const loader = new FBXLoader();
@@ -145,17 +104,17 @@ onMounted(() => {
         }
       });
       scene.add(object);
-      object.scale.set(0.034, 0.034, 0.034);  // 根据需要调整模型大小
+      object.scale.set(0.068, 0.068, 0.068);  // 根据需要调整模型大小
       setInterval(
         () => {
-          object.rotation.y += 0.01
+          object.rotation.y += 0.005
           renderer.render(scene, camera);
         }, 30
       )
 
       setTimeout(() => {
         loadingDom.value.remove();
-        isLoad.value = true;
+        roseDom.value.classList.add("fadein")
       }, 60)
 
       roseModel = object
@@ -179,6 +138,15 @@ onMounted(() => {
 
 })
 
+function musicSwitch(status) {
+  if (status) {
+    audioPlayer.play();
+    isMucicOpen.value = true
+  } else {
+    audioPlayer.pause();
+    isMucicOpen.value = false
+  }
+}
 
 // 处理鼠标事件
 function onMouseDown(event) {
@@ -251,6 +219,7 @@ function playAudio(audioSrc) {
   height: 100vh;
   position: relative;
   overflow: hidden;
+  background: radial-gradient(circle at center, #fad0c4, #ff9a9e);
 }
 
 .page-rose .text {
@@ -258,7 +227,7 @@ function playAudio(audioSrc) {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  font-size: 11px;
+  font-size: 14px;
   color: #CC4C3E;
 }
 
@@ -293,82 +262,6 @@ function playAudio(audioSrc) {
   position: absolute;
   right: 16px;
   top: 10px;
-}
-
-.start-page {
-  width: 100%;
-  height: 100vh;
-  background-color: #24A8B7;
-  position: absolute;
-  z-index: 3;
-  padding-top: 20vh;
-  box-sizing: border-box;
-}
-
-.face {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  background-color: #ffcc00;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
-  margin-bottom: 60px;
-}
-
-.eye {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #000;
-  border-radius: 50%;
-}
-
-.eye.left {
-  top: 60px;
-  left: 50px;
-}
-
-.eye.right {
-  top: 60px;
-  right: 50px;
-}
-
-.mouth {
-  position: absolute;
-  bottom: 50px;
-  width: 100px;
-  border-bottom: 6px solid #000;
-  transition: all 0.8s ease;
-}
-
-/* 笑容状态 */
-.smile .mouth {
-  height: 60px;
-  border-radius: 60%;
-}
-
-.btn-smail {
-
-  margin-left: 50%;
-  transform: translateX(-50%);
-
-  padding: 16px 40px;
-  border: none;
-  color: black;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-size: 16px;
-  font-family: fantasy;
-}
-
-.btn-smail:hover {
-  background-color: #ff5100;
-  color: #fff;
 }
 
 
