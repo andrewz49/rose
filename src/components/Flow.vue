@@ -90,9 +90,8 @@ onMounted(() => {
     // progress-bar-inner
     // transform 0% -> 100%
     if (itemsTotal > 2) {
-
-      progressEle.style.width = `${(itemsLoaded / itemsTotal) * 100}%`
-      progressText.innerHTML = `${(itemsLoaded / itemsTotal).toFixed(2)  * 100}%`
+      progressEle.style.width = `${((itemsLoaded / itemsTotal) * 100 ).toFixed(2)}%`
+      progressText.innerHTML = `${((itemsLoaded / itemsTotal) * 100 ).toFixed(2)}%`
     }
   }
   loadingManager.onError = (url) => {
